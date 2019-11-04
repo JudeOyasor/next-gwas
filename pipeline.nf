@@ -25,8 +25,7 @@ process list_snps{
 
     script:
     """
-    plink --noweb --bfile ${bfile} --silent \
-    --write-snplist --out ${bfile}
+    plink --noweb --bfile ${bfile} --silent --write-snplist --out ${bfile}
     """
 
 }
@@ -64,9 +63,7 @@ process chi2_per_snp{
 
     script:
     """
-    plink --noweb --bfile ${bfile} \
-    --assoc --out ${bfile}-\$( echo '${snp[1]}'| cut -d':' -f 2) \
-    --silent --snp ${snp[1]}
+    plink --noweb --bfile ${bfile} --assoc --out ${bfile}-\$( echo '${snp[1]}'| cut -d':' -f 2) --silent --snp ${snp[1]}
     """
 
 }
@@ -95,9 +92,7 @@ process maxT_per_snp{
 
     script:
     """
-    echo plink --noweb --bfile ${bfile} --assoc --mperm ${params.mperm} \
-    --out ${bfile}-\$( echo '${snp[1]}'| cut -d':' -f 2) \
-    --silent --snp ${snp[1]}
+    echo plink --noweb --bfile ${bfile} --assoc --mperm ${params.mperm} --out ${bfile}-\$( echo '${snp[1]}'| cut -d':' -f 2) --silent --snp ${snp[1]}
     """
 }
 
