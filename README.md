@@ -10,7 +10,12 @@ The main objective of this project is to develop a parallel distributed computat
 ---
 ## Pre-requisites
 
-Ensure that you have both [nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) and [plink](http://zzz.bwh.harvard.edu/plink/download.shtml ) installed on your machine by following the instructions provided in the links. We highly recommend that you install these two tools in a directory accesible by your by your `$PATH` variable.
+To get started you needed the following tools on your system:
+
+- [nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation)
+- [plink](http://zzz.bwh.harvard.edu/plink/download.shtml ) 
+
+We particularly recommend installing them in a directory accesible by your by your `$PATH` variable i.e, `$HOME/bin`
 
 ## Installation
 
