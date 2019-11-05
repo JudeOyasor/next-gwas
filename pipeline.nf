@@ -72,7 +72,7 @@ process maxT_per_snp{
 
     echo true
     publishDir "${params.output_dir}/maxT/",
-                pattern:"*.mperm",
+                pattern:"*mperm",
                 overwrite: true,
                 mode:'copy'
 
@@ -85,7 +85,7 @@ process maxT_per_snp{
         tuple bfile, file(bfileList) from bfile_ch3
 
     output:
-        file("*.mperm") into snp_maxT_ch
+        file("*mperm") into snp_maxT_ch
 
     when:
         snp[0]==bfile
