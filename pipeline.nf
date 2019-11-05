@@ -6,9 +6,9 @@ Channel
 
 process list_snps{
 
-    cpus 3 
-    memory "6GB"
-    maxForks 6
+    cpus 2 
+    memory "4GB"
+    maxForks 2
 
     echo true
     publishDir "${params.output_dir}/snplist/",
@@ -47,8 +47,8 @@ process chi2_per_snp{
                 overwrite:true,
                 mode:"copy"
 
-    cpus 8
-    memory "24GB"
+    cpus 4
+    memory "16GB"
     maxForks 100
 
     input:
@@ -77,7 +77,7 @@ process maxT_per_snp{
                 mode:'copy'
 
     cpus 16
-    memory "40GB"
+    memory "20GB"
     maxForks 1000
 
     input:
