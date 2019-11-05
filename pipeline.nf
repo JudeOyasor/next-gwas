@@ -9,7 +9,6 @@ process list_snps{
     cpus 3 
     memory "6GB"
     maxForks 6
-    clusterOptions '-J list_snps -o output_%j.txt -e errors_%j.txt -t 01:00:00'
 
     echo true
     publishDir "${params.output_dir}/snplist/",
@@ -51,7 +50,6 @@ process chi2_per_snp{
     cpus 8
     memory "24GB"
     maxForks 100
-    clusterOptions '-J chi2_per_snp -o output_%j.txt -e errors_%j.txt -t     01:00:00'
 
     input:
         each snp from snplist_ch1
@@ -81,7 +79,6 @@ process maxT_per_snp{
     cpus 16
     memory "40GB"
     maxForks 1000
-    clusterOptions '-J maxT_per_snp -o output_%j.txt -e errors_%j.txt -t     01:00:00'
 
     input:
         each snp from snplist_ch2
