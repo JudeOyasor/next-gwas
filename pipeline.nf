@@ -6,9 +6,10 @@ Channel
 
 process list_snps{
 
-    cpus 3
-    memory "2GB"
-    maxForks 6
+    cpus 2
+    memory "4GB"
+    maxForks 2
+    clusterOptions '--job-name=nxf_list_snps'
 
     echo true
     publishDir "${params.output_dir}/snplist/",
@@ -47,9 +48,10 @@ process chi2_per_snp{
                 overwrite:true,
                 mode:"copy"
 
-    cpus 3
-    memory "2GB"
-    maxForks 30
+    cpus 4
+    memory "16GB"
+    maxForks 100
+    clusterOptions '--job-name=nxf_chi2_per_snp'
 
     input:
         each snp from snplist_ch1
@@ -76,9 +78,10 @@ process maxT_per_snp{
                 overwrite: true,
                 mode:'copy'
 
-    cpus 3
-    memory "2GB"
-    maxForks 30
+    cpus 8
+    memory "16GB"
+    maxForks 100
+    clusterOptions '--job-name=nxf_maxT_per_snp'
 
     input:
         each snp from snplist_ch2
