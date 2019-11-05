@@ -47,9 +47,9 @@ process chi2_per_snp{
                 overwrite:true,
                 mode:"copy"
 
-    cpus 4
-    memory "16GB"
-    maxForks 100
+    cpus 3
+    memory "6GB"
+    maxForks 5
 
     input:
         each snp from snplist_ch1
@@ -76,9 +76,9 @@ process maxT_per_snp{
                 overwrite: true,
                 mode:'copy'
 
-    cpus 16
-    memory "20GB"
-    maxForks 1000
+    cpus 3
+    memory "6GB"
+    maxForks 10
 
     input:
         each snp from snplist_ch2
