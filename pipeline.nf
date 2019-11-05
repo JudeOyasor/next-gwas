@@ -8,7 +8,7 @@ process list_snps{
 
     cpus 2 
     memory "4GB"
-    maxForks 2
+    maxForks 10
 
     echo true
     publishDir "${params.output_dir}/snplist/",
@@ -72,7 +72,7 @@ process maxT_per_snp{
 
     echo true
     publishDir "${params.output_dir}/maxT/",
-                pattern:"*mperm",
+                pattern:"*.mperm.*",
                 overwrite: true,
                 mode:'copy'
 
@@ -85,14 +85,14 @@ process maxT_per_snp{
         tuple bfile, file(bfileList) from bfile_ch3
 
     output:
-        file("*mperm") into snp_maxT_ch
+        file("*.mperm.*") into snp_maxT_ch
 
     when:
         snp[0]==bfile
 
     script:
     """
-    echo plink --noweb --bfile ${bfile} --assoc --mperm ${params.mperm} --out ${bfile}-\$( echo '${snp[1]}'| cut -d':' -f 2) --silent --snp ${snp[1]}
+    plink --noweb --bfile ${bfile} --assoc --mperm ${params.mperm} --mperm-save --out ${bfile}-\$( echo '${snp[1]}'|cut -d':' -f 2) --silent --snp ${snp[1]}
     """
 }
 
