@@ -2,13 +2,13 @@ Channel
     .fromFilePairs("${params.input_dir}/raw/*.{bed,fam,bim}",size:3)
     .ifEmpty {error "No files in  ${params.input_dir}."}
     .filter  {key, filename  -> key in params.input_pat}
-    .into {bfile_ch1; bfile_ch2; bfile_ch3}
+    .into {bfile_ch1; bfile_ch2}
 
 process list_snps{
 
     cpus 2 
     memory "4GB"
-    maxForks 10
+    maxForks 2
 
     echo true
     publishDir "${params.output_dir}/snplist/",
@@ -37,11 +37,17 @@ snpfile_ch
             return tuple(key, snps)
     }
     .transpose()
-    .into {snplist_ch1; snplist_ch2}
+    .set{snplist_ch}
 
 
-process chi2_per_snp{
+process analysis_per_snp{
+
     echo true
+    publishDir "${params.output_dir}/maxT/",
+                pattern:"*.mperm.*",
+                overwrite: true,
+                mode:'copy'
+    
     publishDir "${params.output_dir}/assoc/",
                 pattern: "*.assoc",
                 overwrite:true,
@@ -49,43 +55,14 @@ process chi2_per_snp{
 
     cpus 3
     memory "6GB"
-    maxForks 5
-
-    input:
-        each snp from snplist_ch1
-        tuple bfile, file(bfileNames) from bfile_ch2
-
-    output:
-        file("*.assoc") into snp_chi2_ch
-
-    when:
-        snp[0]==bfile
-
-    script:
-    """
-    plink --noweb --bfile ${bfile} --assoc --out ${bfile}-\$( echo '${snp[1]}'| cut -d':' -f 2) --silent --snp ${snp[1]}
-    """
-
-}
-
-process maxT_per_snp{
-
-    echo true
-    publishDir "${params.output_dir}/maxT/",
-                pattern:"*.mperm.*",
-                overwrite: true,
-                mode:'copy'
-
-    cpus 3
-    memory "6GB"
     maxForks 10
 
     input:
-        each snp from snplist_ch2
-        tuple bfile, file(bfileList) from bfile_ch3
+        each snp from snplist_ch
+        tuple bfile, file(bfileList) from bfile_ch2
 
     output:
-        file("*.mperm.*") into snp_maxT_ch
+    tuple file("*.assoc"), file("*.mperm.*") into analysis_ch
 
     when:
         snp[0]==bfile
@@ -93,6 +70,22 @@ process maxT_per_snp{
     script:
     """
     plink --noweb --bfile ${bfile} --assoc --mperm ${params.mperm} --mperm-save --out ${bfile}-\$( echo '${snp[1]}'|cut -d':' -f 2) --silent --snp ${snp[1]}
+    """
+}
+
+process merge_files{
+
+    echo true
+    
+    input:
+      set file(assoc), file(maxT) from analysis_ch
+
+    output:
+
+    script:
+    """
+        echo $assoc
+        echo $maxT
     """
 }
 
