@@ -6,7 +6,6 @@ Channel
 
 process make_snpblocks{
 
-    echo true
     publishDir "${params.output_dir}/snpblocks/",
                 pattern:"*.var.ranges",
                 overwrite:true,
@@ -37,20 +36,15 @@ snpblock_files_ch
     .set{snpblocks_ch}
 
 
-process maxT{
+process compute_maxT{
 
-    echo true
-    publishDir "${params.output_dir}/maxT/",
-                pattern:"*.model.best.mperm",
-                overwrite: true,
-                mode:'copy'
-
+        
     input:
         each snp from snpblocks_ch
         tuple bfile, file(bfileList) from bfile_ch2
 
     output:
-        file("*.model.best.mperm") into analysis_ch
+        file("*.model.best.mperm") into maxTfiles_ch
 
     when:
         snp[0]==bfile
@@ -62,18 +56,6 @@ process maxT{
 }
 
 
-process merge_files{
-
-    echo true
-    
-    input:
-        file(maxT) from analysis_ch
-
-    output:
-
-    script:
-    """
-        echo $maxT
-    """
-}
+maxTfiles_ch
+    .collectFile(keepHeader:true, storeDir: "${params.output_dir}/maxT")
 
