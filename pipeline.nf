@@ -25,11 +25,12 @@ process list_snps{
 
     script:
     """
-    plink --noweb --bfile ${bfile} --silent --write-snplist --out ${bfile}
+    plink --bfile ${bfile} --write-snplist --out ${bfile}
     """
 
 }
 
+/*
 snpfile_ch
     .map{file ->
             def key  = file.name.tokenize(".").get(0)
@@ -69,7 +70,7 @@ process analysis_per_snp{
 
     script:
     """
-    plink --noweb --bfile ${bfile} --assoc --mperm ${params.mperm} --mperm-save --out ${bfile}-\$( echo '${snp[1]}'|cut -d':' -f 2) --silent --snp ${snp[1]}
+    plink --bfile ${bfile} --assoc --mperm ${params.mperm} --mperm-save --out ${bfile}-$( echo '${snp[1]}'|cut -d':' -f 2) --snp ${snp[1]}
     """
 }
 
@@ -88,4 +89,4 @@ process merge_files{
         echo $maxT
     """
 }
-
+*/
