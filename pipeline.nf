@@ -6,10 +6,6 @@ Channel
 
 process list_snps{
 
-    cpus 2 
-    memory "4GB"
-    maxForks 2
-
     echo true
     publishDir "${params.output_dir}/snplist/",
                 pattern:"*.snplist",
@@ -30,7 +26,7 @@ process list_snps{
 
 }
 
-/*
+
 snpfile_ch
     .map{file ->
             def key  = file.name.tokenize(".").get(0)
@@ -41,52 +37,43 @@ snpfile_ch
     .set{snplist_ch}
 
 
-process analysis_per_snp{
+process maxT_per_snp{
 
     echo true
     publishDir "${params.output_dir}/maxT/",
                 pattern:"*.mperm.*",
                 overwrite: true,
                 mode:'copy'
-    
-    publishDir "${params.output_dir}/assoc/",
-                pattern: "*.assoc",
-                overwrite:true,
-                mode:"copy"
-
-    cpus 3
-    memory "6GB"
-    maxForks 10
 
     input:
         each snp from snplist_ch
         tuple bfile, file(bfileList) from bfile_ch2
 
     output:
-    tuple file("*.assoc"), file("*.mperm.*") into analysis_ch
+        file("*.mperm.*") into analysis_ch
 
     when:
         snp[0]==bfile
 
     script:
     """
-    plink --bfile ${bfile} --assoc --mperm ${params.mperm} --mperm-save --out ${bfile}-$( echo '${snp[1]}'|cut -d':' -f 2) --snp ${snp[1]}
+    plink --bfile ${bfile}  --model mperm=${params.mperm} --mperm-save --out ${bfile}-\$( echo '${snp[1]}'|cut -d':' -f 2) --snp ${snp[1]}
     """
 }
+
 
 process merge_files{
 
     echo true
     
     input:
-      set file(assoc), file(maxT) from analysis_ch
+        file(maxT) from analysis_ch
 
     output:
 
     script:
     """
-        echo $assoc
         echo $maxT
     """
 }
-*/
+
