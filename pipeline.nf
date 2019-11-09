@@ -4,11 +4,11 @@ Channel
     .filter  {key, filename  -> key in params.input_pat}
     .into {bfile_ch1; bfile_ch2}
 
-process list_snps{
+process make_snpblocks{
 
     echo true
-    publishDir "${params.output_dir}/snplist/",
-                pattern:"*.snplist",
+    publishDir "${params.output_dir}/snpblocks/",
+                pattern:"*.var.ranges",
                 overwrite:true,
                 mode:'copy'
 
@@ -17,47 +17,47 @@ process list_snps{
      set bfile, file(bfileNames) from bfile_ch1
 
     output:
-    file("*.snplist") into snpfile_ch
+    file("*.var.ranges") into snpblock_files_ch
 
     script:
     """
-    plink --bfile ${bfile} --write-snplist --out ${bfile}
+    plink --bfile ${bfile} --write-var-ranges ${params.nblocks} --out ${bfile}
     """
 
 }
 
 
-snpfile_ch
+snpblock_files_ch
     .map{file ->
             def key  = file.name.tokenize(".").get(0)
-            def snps = file.splitText()
+            def snps = file.splitCsv(header:true, sep: "\t")
             return tuple(key, snps)
     }
     .transpose()
-    .set{snplist_ch}
+    .set{snpblocks_ch}
 
 
-process maxT_per_snp{
+process maxT{
 
     echo true
     publishDir "${params.output_dir}/maxT/",
-                pattern:"*.mperm.*",
+                pattern:"*.model.best.mperm",
                 overwrite: true,
                 mode:'copy'
 
     input:
-        each snp from snplist_ch
+        each snp from snpblocks_ch
         tuple bfile, file(bfileList) from bfile_ch2
 
     output:
-        file("*.mperm.*") into analysis_ch
+        file("*.model.best.mperm") into analysis_ch
 
     when:
         snp[0]==bfile
 
     script:
     """
-    plink --bfile ${bfile}  --model mperm=${params.mperm} --mperm-save --out ${bfile}-\$( echo '${snp[1]}'|cut -d':' -f 2) --snp ${snp[1]}
+    plink --bfile ${bfile}  --model mperm=${params.mperm} --mperm-save --out ${bfile} --snps ${snp[1].FIRST}-${snp[1].LAST}
     """
 }
 
