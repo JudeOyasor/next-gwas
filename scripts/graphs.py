@@ -367,6 +367,8 @@ if __name__ == "__main__" :
                title='',
                xlabel='chromosome',
                ylabel='-log10(p)',
+               lines =[4,6.3],
+               lines_colors=['b','r'],
                colors = colors
              )
 
