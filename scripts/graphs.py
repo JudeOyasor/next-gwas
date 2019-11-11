@@ -321,8 +321,8 @@ def manhattan(p1, pos1, chr1, label1,
 if __name__ == "__main__" :
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--assoc', type=argparse.FileType('r', encoding='UTF-8'), required=True)
-    parser.add_argument('--maxT', type=argparse.FileType('r', encoding='UTF-8'), required=True)
+    parser.add_argument('--assoc', type=argparse.FileType('r'), required=True)
+    parser.add_argument('--maxT', type=argparse.FileType('r'), required=True)
     args = parser.parse_args()
     
     assoc = pd.read_csv(filepath_or_buffer= args.assoc,delim_whitespace=  True)
