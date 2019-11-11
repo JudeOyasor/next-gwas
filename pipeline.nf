@@ -81,7 +81,7 @@ process plot_graphs{
         file("*.png")
     script:
     """
-    python ${params.script_dir}/graphs.py --assoc ${assoc} --maxT ${maxT}
+    python3 ${params.script_dir}/graphs.py --assoc ${assoc} --maxT ${maxT}
     """
 } 
 
