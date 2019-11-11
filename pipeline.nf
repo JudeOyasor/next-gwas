@@ -37,25 +37,51 @@ snpblock_files_ch
 
 
 process compute_maxT{
-
-        
+   
     input:
         each snp from snpblocks_ch
         tuple bfile, file(bfileList) from bfile_ch2
 
     output:
-        file("*.model.best.mperm") into maxTfiles_ch
+        file("*.assoc.mperm") into maxTfile_ch
+        file("*.assoc") into assocfile_ch
 
     when:
         snp[0]==bfile
 
     script:
     """
-    plink --bfile ${bfile}  --model mperm=${params.mperm} --mperm-save --out ${bfile} --snps ${snp[1].FIRST}-${snp[1].LAST}
+    plink --bfile ${bfile} --assoc mperm=${params.mperm} --seed 567489 --mperm-save --out ${bfile} --snps ${snp[1].FIRST}-${snp[1].LAST}
     """
 }
 
 
-maxTfiles_ch
-    .collectFile(keepHeader:true, storeDir: "${params.output_dir}/maxT")
+maxTfile_ch
+    .collectFile(keepHeader:true, storeDir:"${params.output_dir}/data")
+    .set{maxT_ch}
+
+assocfile_ch
+    .collectFile(keepHeader:true, storeDir:"${params.output_dir}/data")
+    .set{assoc_ch}
+
+
+process plot_graphs{
+
+    echo true
+    publishDir "${params.output_dir}/",
+                 pattern:"*.png",
+                 overwrite:true,
+                 mode:'copy' 
+
+    input:
+        file(assoc) from assoc_ch
+        file(maxT) from maxT_ch
+
+    output:
+        file("*.png")
+    script:
+    """
+    python ${params.script_dir}/graphs.py --assoc ${assoc} --maxT ${maxT}
+    """
+} 
 
